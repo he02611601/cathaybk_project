@@ -1,7 +1,8 @@
 package cathaybk.project.controller;
 
-import cathaybk.project.entity.Currencies;
-import cathaybk.project.repository.CurrenciesRepository;
+import cathaybk.project.entity.Currency;
+import cathaybk.project.service.CurrenciesService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,19 +10,40 @@ import java.util.List;
 @RestController
 @RequestMapping("/currencies")
 public class CurrenciesController {
-    private final CurrenciesRepository repo;
 
-    public CurrenciesController(CurrenciesRepository repo) {
-        this.repo = repo;
-    }
+    private final CurrenciesService service;
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello from Currencies Controller!";
+    public CurrenciesController(CurrenciesService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Currencies> allCurrencies() {
-        return repo.findAll();
+    public List<Currency> listAll() {
+        return service.findAll();
+    }
+
+    @PostMapping
+    public Currency create(@RequestBody Currency currency) {
+        return service.save(currency);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Currency> update(@PathVariable Long id, @RequestBody Currency updated) {
+        return service.findById(id)
+            .map(existing -> {
+                existing.setCode(updated.getCode());
+                existing.setName(updated.getName());
+                return ResponseEntity.ok(service.save(existing));
+            })
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (service.findById(id).isPresent()) {
+            service.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
