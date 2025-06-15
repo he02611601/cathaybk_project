@@ -12,6 +12,13 @@ public class Currency {
     private String code;
     private String name;
 
+    public Currency() {}
+
+    public Currency(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
     // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

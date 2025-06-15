@@ -2,6 +2,7 @@ package cathaybk.project.controller;
 
 import cathaybk.project.entity.Currency;
 import cathaybk.project.service.CurrenciesService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class CurrenciesController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Currency create(@RequestBody Currency currency) {
         return service.save(currency);
     }

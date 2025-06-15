@@ -39,17 +39,19 @@ public class CoindeskService {
         JSONObject bpi = json.getJSONObject("bpi");
         List<CurrencyInfo> currencyInfoList = new ArrayList<>();
 
-        for (String key : bpi.keySet()) {
+        Iterator<String> keys = bpi.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
             JSONObject currencyJson = bpi.getJSONObject(key);
             String code = currencyJson.getString("code");
             String rate = currencyJson.getString("rate");
-            float rateFloat = (float) currencyJson.getDouble("rate_float"); // 原始欄位
-        
+            float rateFloat = (float) currencyJson.getDouble("rate_float");
+
             Optional<Currency> found = currencyRepository.findByCode(code);
             String name = found.map(Currency::getName).orElse("（未知）");
-        
+
             currencyInfoList.add(new CurrencyInfo(code, name, rate, rateFloat));
-        }        
+        }    
 
         CoindeskResponseDTO result = new CoindeskResponseDTO();
         result.setUpdateTime(formattedTime);
